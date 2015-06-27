@@ -1,4 +1,3 @@
-/*背景差分*/
 #include <iostream>
 #include "opencv2/opencv.hpp"
 
@@ -24,7 +23,7 @@ int main()
 
 		cvtColor(frame, src_gray, COLOR_RGB2GRAY);
 
-		absdiff(src_gray, background, dst);//差分
+		absdiff(src_gray, background, dst);//背景差分
 		
 		bitwise_xor(Scalar(255, 0, 0, 0),dst, dst);//xor,颜色取反
 
@@ -38,6 +37,10 @@ int main()
 		vector<Vec4i> hierarchy;
 
 		findContours(dst, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+		
+		//
+		//根据输入鱼的轮廓，判断与是否死亡
+		//
 
 		/// Draw contours
 		Mat drawing = Mat::zeros(dst.size(), CV_8UC3);

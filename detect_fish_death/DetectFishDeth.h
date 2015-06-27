@@ -9,7 +9,7 @@ class DetectFishDeth
 public:
 	DetectFishDeth(const vector<vector<Point> > &contours);
 	~DetectFishDeth();
-	Get_relativepoz();
+	//Get_relativepoz();
 
 
 private:
@@ -27,12 +27,15 @@ DetectFishDeth::DetectFishDeth(const vector<vector<Point> > &contours)
 	
 	for (int i = 0; i < num_fish; ++i)
 	{
+		//计算鱼的中心点
 		Moments m=moments(contours[i]);
-		center_point.push_back(Point(m.m10 / m.m00, m.m01 / m.m00));//计算鱼的中心点
+		center_point.push_back(Point(m.m10 / m.m00, m.m01 / m.m00));
 
-		speed.push_back(0);// 速度初始化为0；
+		// 速度初始化为0；
+		speed.push_back(0);
 		
-		contour_area.push_back(contourArea(contours[i]));//调用外部函数求轮廓面积
+		//调用外部函数求轮廓面积
+		contour_area.push_back(contourArea(contours[i]));
 	}
 }
 
