@@ -15,7 +15,7 @@ int main()
 	Mat background;
 	background = imread("background.bmp", 0);//0:gray
 
-	VideoCapture vidCapture("Video179.wmv");//20140109.avi
+	VideoCapture vidCapture("20140109.avi");//Video179.wmv
 	Mat frame;
 
 	namedWindow("Contours", CV_WINDOW_AUTOSIZE);
@@ -49,7 +49,7 @@ int main()
 		}
 
 		if (!detect_fish_deth){
-			detect_fish_deth = new DetectFishDeth(another_contours, 640, 600);
+			detect_fish_deth = new DetectFishDeth(another_contours, 640, 900);
 		}
 		else{
 			vector<double> prob = detect_fish_deth->get_prob_death(another_contours);

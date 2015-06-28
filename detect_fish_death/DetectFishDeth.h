@@ -36,7 +36,7 @@ public:
 
 private:
 
-	void  update_data(const vector<vector<Point> > &contours);//
+	void  update_data(vector<vector<Point>> contours);//
 
 	int FindIndex(vector<Point> center_point, Point center);
 	vector<int> fish_Assigned;
@@ -72,12 +72,13 @@ DetectFishDeth::DetectFishDeth(const vector<vector<Point> > &contours, int bp, i
 		fish_Assigned.push_back(0);
 	}
 }
-void DetectFishDeth::update_data(const vector<vector<Point> > &contours)
+
+void DetectFishDeth::update_data(vector<vector<Point>> contours)
 {
-	
 	for (int i = 0; i < num_fish; ++i){
 		fish_Assigned[i] = 0;
 	}
+	// 没有重叠的情况，目标数量==鱼条数
 	if (contours.size() == num_fish){
 		for (int i = 0; i < num_fish; ++i)
 		{
@@ -92,14 +93,31 @@ void DetectFishDeth::update_data(const vector<vector<Point> > &contours)
 			trajectory[index].pop_back();
 			center_point[index] = center;
 			contour_area[index] = contourArea(contours[i]);
-			cout << index<<": "<<contour_area[index] << endl;
+			//cout << index<<": "<<contour_area[index] << endl;
 		}
 	}
+	//重叠的情况
 	else if (contours.size() < num_fish ){
 
-	}
+		sort(contours.begin(), contours.end(), [](vector<Point> a, vector<Point> b){return contourArea(a) > contourArea(b); });
 
+		for (int j = 0; j < contours.size(); ++j){
+			double n = round(contourArea(contours[j]) / avg_area);//重叠区域有几个鱼
+
+			Moments m = moments(contours[j]);
+			Point center = Point(m.m10 / m.m00, m.m01 / m.m00);
+
+			for (int i = 0; i < n; ++i){
+				int index = FindIndex(center_point, center);
+				trajectory[index].insert(trajectory[index].cbegin(), center);
+				trajectory[index].pop_back();
+				center_point[index] = center;
+				contour_area[index] = contourArea(contours[j]) / n;
+			}
+		}
+	}
 }
+
 vector<double> DetectFishDeth::get_prob_death(const vector<vector<Point> > &contours)
 {
 	this->update_data(contours);
@@ -126,11 +144,10 @@ vector<double> DetectFishDeth::get_prob_death(const vector<vector<Point> > &cont
 	}
 	return prob;
 }
+
 vector<double> DetectFishDeth::get_speed()
 {
 	vector<double> speed;
-
-
 	for (int i = 0; i < num_fish; ++i)
 	{
 		double x_sum = 0;
