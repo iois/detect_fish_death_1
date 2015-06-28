@@ -1,5 +1,3 @@
-/*背景差分*/
-
 #include <iostream>
 #include "opencv2/opencv.hpp"
 #include"DetectFishDeth.h"
@@ -7,12 +5,13 @@
 using namespace std;
 using namespace cv;
 
+const Scalar COLOR = Scalar(255, 255, 0);
 
-Mat src_gray;
-Mat dst;
-Scalar color = Scalar(255, 255, 0);
 int main()
 {
+	Mat src_gray;
+	Mat dst;
+
 	Mat background;
 	background = imread("background.bmp", 0);//0:gray
 
@@ -22,6 +21,7 @@ int main()
 	namedWindow("Contours", CV_WINDOW_AUTOSIZE);
 
 	DetectFishDeth *detect_fish_deth = nullptr;
+
 	for (;;){
 		vidCapture >> frame;
 
@@ -33,7 +33,7 @@ int main()
 
 		GaussianBlur(dst, dst, Size(5, 5), 0, 0);
 
-		threshold(dst, dst, 230, 255, 0);//阈值分割
+		threshold(dst, dst, 200, 255, 0);//阈值分割
 
 		imshow("camera 1 frame", dst);
 
@@ -73,13 +73,14 @@ int main()
 				cout << "prob= " << var << " ";
 			}cout << endl;
 		}
+
 		/// Draw contours
 		Mat drawing = Mat::zeros(dst.size(), CV_8UC3);
 		for (int i = 0; i< contours.size(); i++)
 		{
 			//if (contours[i].size() >4)
 			{
-				drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, Point());
+				drawContours(drawing, contours, i, COLOR, 2, 8, hierarchy, 0, Point());
 				/*
 				for (int j = 0; j < contours[i].size(); ++j){
 				cout << contours[i][j].x << " " << contours[i][j].y << endl;
@@ -89,7 +90,7 @@ int main()
 		}
 		imshow("Contours", drawing);
 
-		int key = waitKey(66);
+		int key = waitKey(200);
 		if (key == 27){ break; }
 	}
 	return 0;

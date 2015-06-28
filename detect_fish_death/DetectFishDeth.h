@@ -7,10 +7,11 @@
 using namespace std;
 using namespace cv;
 
-const int SIZE_FRAME = 15;
+const int    SIZE_FRAME = 15;
 const double MAX_SPEED = 50;
 const double MAX_AREA = 1000;
 const double MAX_POZ = 600;
+
 class DetectFishDeth
 {
 	//   ºÏ≤‚”„ «∑ÒÀ¿Õˆ£¨∏≈¬ ≈–∂œ
