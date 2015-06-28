@@ -15,7 +15,7 @@ int main()
 	Mat background;
 	background = imread("background.bmp", 0);//0:gray
 
-	VideoCapture vidCapture("20140109.avi");
+	VideoCapture vidCapture("Video179.wmv");//20140109.avi
 	Mat frame;
 
 	namedWindow("Contours", CV_WINDOW_AUTOSIZE);
@@ -33,7 +33,7 @@ int main()
 
 		GaussianBlur(dst, dst, Size(5, 5), 0, 0);
 
-		threshold(dst, dst, 200, 255, 0);//阈值分割
+		threshold(dst, dst, 210, 255, 0);//阈值分割
 
 		imshow("camera 1 frame", dst);
 
@@ -43,9 +43,11 @@ int main()
 		findContours(dst, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
 		vector<vector<Point> > another_contours;
-		for (int i = 0; i < 3; ++i){
+
+		for (int i = 0; i < contours.size()-1; ++i){
 			another_contours.push_back(contours[i + 1]);
 		}
+
 		if (!detect_fish_deth){
 			detect_fish_deth = new DetectFishDeth(another_contours, 640, 600);
 		}
@@ -55,19 +57,23 @@ int main()
 			vector<double> speed = detect_fish_deth->get_speed();
 			vector<double> area = detect_fish_deth->get_diff_area();
 			vector<double> poz = detect_fish_deth->get_relativepoz();
+			/*
 			for each (double var in speed)
 			{
 				cout << "speed= " << var << " ";
 			}cout << endl;
+			
 			for each (double var in area)
 			{
 				cout << "area= " << var << " ";
 			}cout << endl;
+			
 			for each (double var in poz)
 			{
 				cout << "poz= " << var << " ";
 			}
 			cout << endl;
+			*/
 			for each (double var in prob)
 			{
 				cout << "prob= " << var << " ";

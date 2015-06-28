@@ -9,7 +9,7 @@ using namespace cv;
 
 const int    SIZE_FRAME = 15;
 const double MAX_SPEED = 50;
-const double MAX_AREA = 1000;
+const double MAX_AREA = 700;
 const double MAX_POZ = 600;
 
 class DetectFishDeth
@@ -38,6 +38,8 @@ private:
 
 	void  update_data(const vector<vector<Point> > &contours);//
 
+	int FindIndex(vector<Point> center_point, Point center);
+	vector<int> fish_Assigned;
 
 	vector <Point>  center_point;
 	vector <double>  contour_area;
@@ -66,19 +68,37 @@ DetectFishDeth::DetectFishDeth(const vector<vector<Point> > &contours, int bp, i
 		center_point.push_back(Point(m.m10 / m.m00, m.m01 / m.m00));//计算鱼的中心点
 
 		contour_area.push_back(contourArea(contours[i]));//调用外部函数求轮廓面积
+
+		fish_Assigned.push_back(0);
 	}
 }
 void DetectFishDeth::update_data(const vector<vector<Point> > &contours)
 {
-	for (int i = 0; i < num_fish; ++i)
-	{
-		Moments m = moments(contours[i]);
-		Point center = Point(m.m10 / m.m00, m.m01 / m.m00);
-		trajectory[i].insert(trajectory[i].cbegin(), center);
-		trajectory[i].pop_back();
-		center_point[i] = center;
-		contour_area[i] = contourArea(contours[i]);
+	
+	for (int i = 0; i < num_fish; ++i){
+		fish_Assigned[i] = 0;
 	}
+	if (contours.size() == num_fish){
+		for (int i = 0; i < num_fish; ++i)
+		{
+			Moments m = moments(contours[i]);
+			Point center = Point(m.m10 / m.m00, m.m01 / m.m00);
+
+			//todo:
+			//目标身份分配
+			int index = FindIndex(center_point, center);
+
+			trajectory[index].insert(trajectory[index].cbegin(), center);
+			trajectory[index].pop_back();
+			center_point[index] = center;
+			contour_area[index] = contourArea(contours[i]);
+			cout << index<<": "<<contour_area[index] << endl;
+		}
+	}
+	else if (contours.size() < num_fish ){
+
+	}
+
 }
 vector<double> DetectFishDeth::get_prob_death(const vector<vector<Point> > &contours)
 {
@@ -144,4 +164,23 @@ vector<double> DetectFishDeth::get_diff_area()
 DetectFishDeth::~DetectFishDeth()
 {
 
+}
+
+int DetectFishDeth::FindIndex(vector<Point> center_point, Point center)
+{
+	int index = 0;
+	double distence2=0; 
+	double max_distence = INT_MAX;
+	for (int j = 0; j < num_fish; j++)
+	{
+		distence2 = (pow(center_point[j].x - center.x, 2) + pow(center_point[j].y - center.y, 2));
+
+		if (distence2<max_distence && fish_Assigned[j] == 0)
+		{
+			index = j; 
+			max_distence = distence2;
+		}
+	}
+	fish_Assigned[index] = 1;
+	return index;
 }
