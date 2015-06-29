@@ -1,9 +1,17 @@
 #include"DetectFishDeth.h"
 
 int    DetectFishDeth::SIZE_FRAME=15;
-double DetectFishDeth::MAX_SPEED=100;
-double DetectFishDeth::MAX_AREA=1200;
+double DetectFishDeth::MAX_SPEED=60;
+double DetectFishDeth::MAX_AREA=1400;
 double DetectFishDeth::MAX_POZ=640;
+
+double DetectFishDeth::theta1=0.8;//relative position
+double DetectFishDeth::theta2=0.7;
+double DetectFishDeth::theta3=1.5;//speed
+
+double DetectFishDeth::alpha1=2;//
+double DetectFishDeth::alpha2=1;
+double DetectFishDeth::alpha3=2;
 
 DetectFishDeth::DetectFishDeth(const vector<vector<Point> > &contours, int bp, int _avg_area)
 {
@@ -85,19 +93,19 @@ vector<double> DetectFishDeth::get_prob_death(const vector<vector<Point> > &cont
 	vector<double> y1;
 	vector<double> y2;
 	vector<double> y3;
-
+	//double  = 1, theta2 = 1, theta3 = 1;
 	for (int i = 0; i < num_fish; ++i)
 	{
-		y3.push_back(-log(_speed[i]));
-		y2.push_back(-log(1 - diffarea[i]));
-		y1.push_back(-log(x[i]));
-		cout << "y3: " << y3[i] << endl;
+		y3.push_back(-log(_speed[i]*alpha3));
+		y2.push_back(-log((1 - diffarea[i])*alpha2));
+		y1.push_back(-log(x[i]*alpha1));
+		//cout << "y3: " << y3[i] << endl;
 		//cout << "y1:" << y1[i] << " y2:" << y2[i] << " y3:" << y3[i] << endl;
 	}
-	double theta1 = 1, theta2 = 1, theta3 = 1;
+	
 	for (int i = 0; i < num_fish; ++i)
 	{
-		prob.push_back(tanh(theta1*y1[i] + theta2*y2[i] + theta3*y3[i]));
+		prob.push_back(sigmoid(theta1*y1[i] + theta2*y2[i] + theta3*y3[i]));
 	}
 	return prob;
 }
@@ -123,7 +131,6 @@ vector<double> DetectFishDeth::get_speed()
 		else{
 			speed.push_back(s/ MAX_SPEED);
 		}
-		
 	}
 	return speed;
 }
@@ -134,12 +141,12 @@ vector<double> DetectFishDeth::get_diff_area()
 	vector<double> diff_area;
 	for (int i = 0; i < num_fish; ++i)
 	{
-		if (contour_area[i] > avg_area){
+		//if (contour_area[i] > avg_area){
 			diff_area.push_back((contour_area[i] - avg_area) / MAX_AREA);
-		}
-		else{
-			diff_area.push_back(0.05);
-		}
+		//}
+		//else{
+		//	diff_area.push_back(0.05);
+		//}
 	}
 	return diff_area;
 }
@@ -166,4 +173,8 @@ int DetectFishDeth::FindIndex(vector<Point> center_point, Point center)
 	}
 	fish_Assigned[index] = 1;
 	return index;
+}
+
+double sigmoid(double x){
+	return 1 / (1 + exp(-x));
 }

@@ -7,7 +7,7 @@
 using namespace std;
 using namespace cv;
 
-
+double sigmoid(double x);
 
 class DetectFishDeth
 {
@@ -20,7 +20,7 @@ public:
 		vector<double> relative_poz;
 		for (int i = 0; i < num_fish; ++i)
 		{
-			relative_poz.push_back(abs(border_position - center_point[i].x) / MAX_POZ);
+			relative_poz.push_back((border_position - center_point[i].x) / MAX_POZ);
 			//cout << "border_position:" << border_position << "center_point[i].x: " << center_point[i].x << endl;
 		}
 		return relative_poz;
@@ -50,4 +50,13 @@ private:
 	static  double MAX_SPEED;
 	static  double MAX_AREA;
 	static  double MAX_POZ;
+
+	static double theta1;
+	static double theta2;
+	static double theta3;
+
+	static double alpha1;
+	static double alpha2;
+	static double alpha3;
 };
+

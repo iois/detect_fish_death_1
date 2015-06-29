@@ -15,7 +15,7 @@ int main()
 	Mat background;
 	background = imread("background.bmp", 0);//0:gray
 
-	VideoCapture vidCapture("20140109.avi");//Video179.wmv
+	VideoCapture vidCapture("Video179.wmv");//Video179.wmv20140109.avi
 	Mat frame;
 
 	namedWindow("Contours", CV_WINDOW_AUTOSIZE);
@@ -33,7 +33,7 @@ int main()
 
 		GaussianBlur(dst, dst, Size(5, 5), 0, 0);
 
-		threshold(dst, dst, 210, 255, 0);//阈值分割
+		threshold(dst, dst, 230, 255, 0);//阈值分割
 
 		imshow("camera 1 frame", dst);
 
@@ -49,7 +49,7 @@ int main()
 		}
 
 		if (!detect_fish_deth){
-			detect_fish_deth = new DetectFishDeth(another_contours, 640, 900);
+			detect_fish_deth = new DetectFishDeth(another_contours, 600, 1000);
 		}
 		else{
 			vector<double> prob = detect_fish_deth->get_prob_death(another_contours);
@@ -57,6 +57,12 @@ int main()
 			vector<double> speed = detect_fish_deth->get_speed();
 			vector<double> area = detect_fish_deth->get_diff_area();
 			vector<double> poz = detect_fish_deth->get_relativepoz();
+			cout << "num of fishs: " << prob.size() << endl;
+			for (int i = 0; i < prob.size(); ++i){
+				cout << "prob=" << prob[i] << endl;
+				cout << "speed= " << speed[i] << " area=" << area[i] << " poz= " << poz[i] <<  endl;
+			}
+			cout << endl;
 			/*
 			for each (double var in speed)
 			{
@@ -73,11 +79,12 @@ int main()
 				cout << "poz= " << var << " ";
 			}
 			cout << endl;
-			*/
+			
 			for each (double var in prob)
 			{
 				cout << "prob= " << var << " ";
 			}cout << endl;
+			*/
 		}
 
 		/// Draw contours
