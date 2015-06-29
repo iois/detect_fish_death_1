@@ -5,6 +5,9 @@ double DetectFishDeth::MAX_SPEED=60;
 double DetectFishDeth::MAX_AREA=1400;
 double DetectFishDeth::MAX_POZ=640;
 
+double DetectFishDeth::SPEED_THRESH=0.8;
+double DetectFishDeth::NEAREST_POINT_THRESH=6;
+
 double DetectFishDeth::theta1=0.8;//relative position
 double DetectFishDeth::theta2=0.7;
 double DetectFishDeth::theta3=1.5;//speed
@@ -13,9 +16,9 @@ double DetectFishDeth::alpha1=2;//
 double DetectFishDeth::alpha2=1;
 double DetectFishDeth::alpha3=2;
 
-DetectFishDeth::DetectFishDeth(const vector<vector<Point> > &contours, int bp, int _avg_area)
+DetectFishDeth::DetectFishDeth(const vector<vector<Point> > &contours, int bp, int _avg_area, int _num_fish)
 {
-	num_fish = contours.size();
+	num_fish = _num_fish;
 
 	border_position = bp;
 	avg_area = _avg_area;
@@ -33,6 +36,8 @@ DetectFishDeth::DetectFishDeth(const vector<vector<Point> > &contours, int bp, i
 		contour_area.push_back(contourArea(contours[i]));//调用外部函数求轮廓面积
 
 		fish_Assigned.push_back(0);
+
+		nearest_point.push_back(0);
 	}
 }
 
@@ -55,6 +60,9 @@ void DetectFishDeth::update_data(vector<vector<Point>> contours)
 			trajectory[index].insert(trajectory[index].cbegin(), center);
 			trajectory[index].pop_back();
 			center_point[index] = center;
+
+			nearest_point[index] = get_nearest_ponit(center, contours[i]);
+
 			contour_area[index] = contourArea(contours[i]);
 			//cout << index<<": "<<contour_area[index] << endl;
 		}
@@ -76,9 +84,24 @@ void DetectFishDeth::update_data(vector<vector<Point>> contours)
 				trajectory[index].pop_back();
 				center_point[index] = center;
 				contour_area[index] = contourArea(contours[j]) / n;
+
+				if (n > 1){
+					nearest_point[index] = -1;
+				}
+				else{
+					nearest_point[index] = get_nearest_ponit(center, contours[i]);
+				}
 			}
 		}
 	}
+}
+
+double DetectFishDeth::get_nearest_ponit(Point center, const vector<Point> &contours){
+	vector<double> dis;
+	for (int j = 0; j < contours.size(); ++j){
+		dis.push_back(sqrt(pow(center.x - contours[j].x, 2) + pow(center.y - contours[j].y, 2)));
+	}
+	return *min_element(dis.begin(), dis.end());
 }
 
 vector<double> DetectFishDeth::get_prob_death(const vector<vector<Point> > &contours)
@@ -105,8 +128,18 @@ vector<double> DetectFishDeth::get_prob_death(const vector<vector<Point> > &cont
 	
 	for (int i = 0; i < num_fish; ++i)
 	{
-		prob.push_back(sigmoid(theta1*y1[i] + theta2*y2[i] + theta3*y3[i]));
+		if (_speed[i]>SPEED_THRESH){
+			prob.push_back(0);
+		}
+		else if (nearest_point[i]>0 && nearest_point[i] < NEAREST_POINT_THRESH){
+			prob.push_back(0);
+		}
+		else{
+			prob.push_back(sigmoid(theta1*y1[i] + theta2*y2[i] + theta3*y3[i]));
+		}
+		cout << "nearest_point : "<<nearest_point[i] << endl;
 	}
+	
 	return prob;
 }
 

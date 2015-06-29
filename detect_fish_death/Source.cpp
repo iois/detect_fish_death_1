@@ -23,7 +23,7 @@ int main()
 	Mat background;
 	background = imread("background.bmp", 0);//0:gray
 
-	VideoCapture vidCapture("Normal+Abnormal_0.1_20130616_2_HCL.AVI");//Video179.wmv20140109.avi
+	VideoCapture vidCapture("20140109.avi");//Video179.wmv20140109.avitest_6fish.AVI
 	Mat frame;
 
 	namedWindow("Contours", CV_WINDOW_AUTOSIZE);
@@ -50,11 +50,13 @@ int main()
 
 		findContours(dst, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
+		/*
 		if (contours.size() < num_fish){
-			cout << "输入的条数少于 找到的目标数量" << endl;
+			cout << "输入的条数 少于 找到的目标数量" << endl;
 			num_fish = contours.size();
 			continue;
 		}
+		*/
 
 		sort(contours.begin(), contours.end(), [](vector<Point> a, vector<Point>b)
 		{
@@ -64,14 +66,16 @@ int main()
 		vector<vector<Point> > another_contours;
 		
 		for (int j = 0; j < num_fish; ++j){
-			another_contours.push_back(contours[j]);
+			if (j>contours.size()-1){
+				another_contours.push_back(contours[0]);
+			}
+			else{
+				another_contours.push_back(contours[j]);
+			}
 		}
-		//for (int i = 0; i < contours.size()-1; ++i){
-		//	another_contours.push_back(contours[i + 1]);
-		//}
 
 		if (!detect_fish_deth){
-			detect_fish_deth = new DetectFishDeth(another_contours, 600, 1000);
+			detect_fish_deth = new DetectFishDeth(another_contours, 600, 1000,num_fish);
 		}
 		else{
 			vector<double> prob = detect_fish_deth->get_prob_death(another_contours);

@@ -3,17 +3,19 @@
 #include <list>
 #include <math.h>
 #include <stdlib.h> 
-
+#include <algorithm>
 using namespace std;
 using namespace cv;
 
 double sigmoid(double x);
 
+
+
 class DetectFishDeth
 {
 	//   ºÏ≤‚”„ «∑ÒÀ¿Õˆ£¨∏≈¬ ≈–∂œ
 public:
-	DetectFishDeth(const vector<vector<Point> > &contours, int border_position, int avg_area);
+	DetectFishDeth(const vector<vector<Point> > &contours, int border_position, int avg_area,int _num_fish);
 	~DetectFishDeth();
 	vector<double> get_relativepoz()
 	{
@@ -36,9 +38,13 @@ private:
 	void  update_data(vector<vector<Point>> contours);//
 
 	int FindIndex(vector<Point> center_point, Point center);
+
+	double get_nearest_ponit(Point center,const vector<Point> &contours);
+
 	vector<int> fish_Assigned;
 
 	vector <Point>  center_point;
+	vector <double> nearest_point;
 	vector <double>  contour_area;
 	int num_fish;
 	vector<vector<Point> > trajectory;
@@ -58,5 +64,8 @@ private:
 	static double alpha1;
 	static double alpha2;
 	static double alpha3;
+
+	static double SPEED_THRESH;
+	static double NEAREST_POINT_THRESH;
 };
 
