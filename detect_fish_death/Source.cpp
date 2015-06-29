@@ -5,17 +5,25 @@
 using namespace std;
 using namespace cv;
 
+const int AVG_FISH_AREA = 700;
+const int MIN_FISH_AREA = 500;
+const int MAX_FISH_AREA = 1200;
 const Scalar COLOR = Scalar(255, 255, 0);
 
 int main()
 {
+
+	int num_fish = 0;
+	cout << "输入鱼的条数：";
+	cin >> num_fish;
+
 	Mat src_gray;
 	Mat dst;
 
 	Mat background;
 	background = imread("background.bmp", 0);//0:gray
 
-	VideoCapture vidCapture("Video179.wmv");//Video179.wmv20140109.avi
+	VideoCapture vidCapture("Normal+Abnormal_0.1_20130616_2_HCL.AVI");//Video179.wmv20140109.avi
 	Mat frame;
 
 	namedWindow("Contours", CV_WINDOW_AUTOSIZE);
@@ -33,7 +41,7 @@ int main()
 
 		GaussianBlur(dst, dst, Size(5, 5), 0, 0);
 
-		threshold(dst, dst, 230, 255, 0);//阈值分割
+		threshold(dst, dst, 200, 255, 0);//阈值分割
 
 		imshow("camera 1 frame", dst);
 
@@ -42,11 +50,25 @@ int main()
 
 		findContours(dst, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
-		vector<vector<Point> > another_contours;
-
-		for (int i = 0; i < contours.size()-1; ++i){
-			another_contours.push_back(contours[i + 1]);
+		if (contours.size() < num_fish){
+			cout << "输入的条数少于 找到的目标数量" << endl;
+			num_fish = contours.size();
+			continue;
 		}
+
+		sort(contours.begin(), contours.end(), [](vector<Point> a, vector<Point>b)
+		{
+			return abs(contourArea(a) - AVG_FISH_AREA) < abs(contourArea(b) - AVG_FISH_AREA); 
+		});
+
+		vector<vector<Point> > another_contours;
+		
+		for (int j = 0; j < num_fish; ++j){
+			another_contours.push_back(contours[j]);
+		}
+		//for (int i = 0; i < contours.size()-1; ++i){
+		//	another_contours.push_back(contours[i + 1]);
+		//}
 
 		if (!detect_fish_deth){
 			detect_fish_deth = new DetectFishDeth(another_contours, 600, 1000);
@@ -63,28 +85,6 @@ int main()
 				cout << "speed= " << speed[i] << " area=" << area[i] << " poz= " << poz[i] <<  endl;
 			}
 			cout << endl;
-			/*
-			for each (double var in speed)
-			{
-				cout << "speed= " << var << " ";
-			}cout << endl;
-			
-			for each (double var in area)
-			{
-				cout << "area= " << var << " ";
-			}cout << endl;
-			
-			for each (double var in poz)
-			{
-				cout << "poz= " << var << " ";
-			}
-			cout << endl;
-			
-			for each (double var in prob)
-			{
-				cout << "prob= " << var << " ";
-			}cout << endl;
-			*/
 		}
 
 		/// Draw contours
@@ -103,7 +103,7 @@ int main()
 		}
 		imshow("Contours", drawing);
 
-		int key = waitKey(200);
+		int key = waitKey(66);
 		if (key == 27){ break; }
 	}
 	return 0;
