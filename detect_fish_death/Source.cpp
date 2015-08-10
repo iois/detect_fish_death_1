@@ -23,7 +23,7 @@ int main()
 	Mat background;
 	background = imread("background.bmp", 0);//0:gray
 
-	VideoCapture vidCapture("20140109.avi");//Video179.wmv20140109.avitest_6fish.AVI
+	VideoCapture vidCapture("Video179.wmv");//Video179.wmv20140109.avitest_6fish.AVI
 	Mat frame;
 
 	namedWindow("Contours", CV_WINDOW_AUTOSIZE);
