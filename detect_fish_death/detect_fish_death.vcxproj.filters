@@ -24,12 +24,18 @@
     <ClCompile Include="DetectFishDeath_1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Fish.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DetectFishDeth.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DetectFishDeath_1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Fish.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

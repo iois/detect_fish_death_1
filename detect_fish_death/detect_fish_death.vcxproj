@@ -81,11 +81,13 @@
   <ItemGroup>
     <ClCompile Include="DetectFishDeath_1.cpp" />
     <ClCompile Include="DetectFishDeth.cpp" />
+    <ClCompile Include="Fish.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DetectFishDeath_1.h" />
     <ClInclude Include="DetectFishDeth.h" />
+    <ClInclude Include="Fish.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
